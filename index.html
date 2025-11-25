@@ -16,105 +16,234 @@
 </head>
 <body class="bg-gradient-to-br from-purple-900 via-blue-900 to-black text-white min-h-screen">
     
-    <!-- Header -->
-    <header class="py-8 px-4 text-center fade-in">
-        <div class="flex items-center justify-center gap-3 mb-2">
-            <svg class="w-12 h-12 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
-            </svg>
-            <h1 class="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                Sa7ra8iScripts
-            </h1>
+    <!-- Navbar -->
+    <nav class="bg-black/30 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                    </svg>
+                    <span class="text-xl font-bold">Sa7ra8iScripts</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <button onclick="showPage('home')" class="hover:text-cyan-400 transition-all font-semibold">Home</button>
+                    <button onclick="showPage('about')" class="hover:text-cyan-400 transition-all font-semibold">About Us</button>
+                    <div class="relative">
+                        <button onclick="toggleCategories()" class="hover:text-cyan-400 transition-all font-semibold flex items-center gap-1">
+                            Categories
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="categoriesDropdown" class="hidden absolute top-full right-0 mt-2 bg-black/90 backdrop-blur-lg border border-white/20 rounded-lg p-2 min-w-[200px]">
+                            <button onclick="filterCategory('samp')" class="block w-full text-left px-4 py-2 hover:bg-cyan-500/20 rounded transition-all">🎮 SAMP</button>
+                            <button onclick="filterCategory('discord')" class="block w-full text-left px-4 py-2 hover:bg-cyan-500/20 rounded transition-all">🤖 Discord Bots</button>
+                            <button onclick="filterCategory('mta')" class="block w-full text-left px-4 py-2 hover:bg-cyan-500/20 rounded transition-all">🚗 MTA San Andreas</button>
+                            <button onclick="filterCategory('fivem')" class="block w-full text-left px-4 py-2 hover:bg-cyan-500/20 rounded transition-all">🚓 FiveM</button>
+                            <button onclick="filterCategory('all')" class="block w-full text-left px-4 py-2 hover:bg-cyan-500/20 rounded transition-all border-t border-white/10 mt-1">📂 All</button>
+                        </div>
+                    </div>
+                    <button onclick="toggleLogin()" class="bg-cyan-500/20 hover:bg-cyan-500/30 px-4 py-2 rounded-lg transition-all text-sm font-semibold border border-cyan-500/50">
+                        Admin
+                    </button>
+                </div>
+            </div>
         </div>
-        <p class="text-gray-300 text-lg">@sa7ra8i</p>
-        
-        <!-- Admin Login -->
-        <div id="loginArea" class="mt-4 flex items-center justify-center gap-2">
-            <div class="flex items-center gap-2 bg-white/10 backdrop-blur-lg px-4 py-2 rounded-full border border-white/20">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                </svg>
-                <input type="password" id="passwordInput" placeholder="Admin Password" class="bg-transparent border-none outline-none text-white placeholder-gray-400 w-32">
-                <button onclick="handleLogin()" class="bg-cyan-500 hover:bg-cyan-600 px-3 py-1 rounded-full text-sm font-bold transition-all">
+    </nav>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="bg-gradient-to-br from-purple-900/90 to-blue-900/90 backdrop-blur-lg border border-white/20 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold mb-4 text-cyan-400">Admin Login</h3>
+            <input type="password" id="passwordInput" placeholder="Enter Password" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400 mb-4">
+            <div class="flex gap-2">
+                <button onclick="handleLogin()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 py-3 rounded-lg font-bold transition-all">
                     Login
                 </button>
-            </div>
-        </div>
-        
-        <div id="adminArea" class="mt-4 hidden">
-            <div class="flex items-center justify-center gap-3 bg-green-500/20 backdrop-blur-lg px-4 py-2 rounded-full border border-green-500/50 inline-flex">
-                <span class="text-green-400 font-bold text-sm">👑 Admin Mode</span>
-                <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 transition-all">
-                    Logout
+                <button onclick="toggleLogin()" class="px-6 bg-red-500 hover:bg-red-600 py-3 rounded-lg font-bold transition-all">
+                    Cancel
                 </button>
             </div>
         </div>
-    </header>
-
-    <!-- Upload Button (Admin Only) -->
-    <div id="uploadBtn" class="text-center mb-8 hidden fade-in">
-        <button onclick="toggleUpload()" class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 px-8 py-3 rounded-full font-bold shadow-lg transform hover:scale-105 transition-all">
-            <span class="flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                </svg>
-                Upload New Game
-            </span>
-        </button>
     </div>
 
-    <!-- Upload Form (Admin Only) -->
-    <div id="uploadForm" class="max-w-2xl mx-auto mb-8 p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 hidden">
-        <h3 class="text-2xl font-bold mb-4 text-cyan-400">Add New Game</h3>
-        <div class="space-y-4">
-            <input type="text" id="gameTitle" placeholder="Game Title" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400">
-            <input type="text" id="gameImage" placeholder="Image URL" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400">
-            <input type="text" id="gameLink" placeholder="Download Link" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400">
-            <button onclick="addGame()" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 py-3 rounded-lg font-bold transform hover:scale-105 transition-all">
-                Add Game
+    <!-- Home Page -->
+    <div id="homePage">
+        <!-- Header -->
+        <header class="py-12 px-4 text-center fade-in">
+            <h1 class="text-6xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2">
+                Sa7ra8iScripts
+            </h1>
+            <p class="text-gray-300 text-xl mb-2">@sa7ra8i</p>
+            <div id="adminBadge" class="hidden mt-4">
+                <div class="inline-flex items-center gap-3 bg-green-500/20 backdrop-blur-lg px-6 py-3 rounded-full border border-green-500/50">
+                    <span class="text-green-400 font-bold">👑 Admin Mode</span>
+                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-1 rounded-full text-sm font-bold transition-all">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Category Filter Display -->
+        <div class="text-center mb-6">
+            <div id="categoryTitle" class="text-3xl font-bold text-cyan-400">All Scripts</div>
+        </div>
+
+        <!-- Upload Button (Admin Only) -->
+        <div id="uploadBtn" class="text-center mb-8 hidden">
+            <button onclick="toggleUpload()" class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 px-8 py-3 rounded-full font-bold shadow-lg transform hover:scale-105 transition-all">
+                <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Upload New Script
+                </span>
             </button>
         </div>
+
+        <!-- Upload Form (Admin Only) -->
+        <div id="uploadForm" class="max-w-2xl mx-auto mb-8 p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 hidden">
+            <h3 class="text-2xl font-bold mb-4 text-cyan-400">Add New Script</h3>
+            <div class="space-y-4">
+                <input type="text" id="scriptTitle" placeholder="Script Title" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400">
+                <select id="scriptCategory" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white">
+                    <option value="" class="bg-gray-900">Select Category</option>
+                    <option value="samp" class="bg-gray-900">🎮 SAMP</option>
+                    <option value="discord" class="bg-gray-900">🤖 Discord Bots</option>
+                    <option value="mta" class="bg-gray-900">🚗 MTA San Andreas</option>
+                    <option value="fivem" class="bg-gray-900">🚓 FiveM</option>
+                </select>
+                <input type="text" id="scriptImage" placeholder="Image URL" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400">
+                <input type="text" id="scriptLink" placeholder="Download Link" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:border-cyan-400 focus:outline-none text-white placeholder-gray-400">
+                <button onclick="addScript()" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 py-3 rounded-lg font-bold transform hover:scale-105 transition-all">
+                    Add Script
+                </button>
+            </div>
+        </div>
+
+        <!-- Scripts Grid -->
+        <div class="max-w-7xl mx-auto px-4 pb-12">
+            <div id="scriptsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                <!-- Scripts will be loaded here -->
+            </div>
+            
+            <!-- Pagination -->
+            <div id="pagination" class="flex justify-center gap-2 mt-8">
+                <!-- Pagination buttons will be here -->
+            </div>
+            
+            <div id="emptyState" class="text-center py-20">
+                <svg class="w-24 h-24 text-white/20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                </svg>
+                <p class="text-2xl text-gray-400" id="emptyMessage">No scripts available yet.</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Games Grid -->
-    <div class="max-w-7xl mx-auto px-4 pb-12">
-        <div id="gamesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Games will be loaded here -->
-        </div>
-        
-        <div id="emptyState" class="text-center py-20">
-            <svg class="w-24 h-24 text-white/20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
-            </svg>
-            <p class="text-2xl text-gray-400" id="emptyMessage">No games available yet.</p>
+    <!-- About Page -->
+    <div id="aboutPage" class="hidden max-w-4xl mx-auto px-4 py-16">
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8">
+            <h2 class="text-4xl font-bold text-cyan-400 mb-6">About Sa7ra8iScripts</h2>
+            <div class="space-y-4 text-gray-300 text-lg leading-relaxed">
+                <p>Welcome to Sa7ra8iScripts - your premier destination for high-quality game scripts and modifications!</p>
+                <p>We provide scripts for:</p>
+                <ul class="list-disc list-inside space-y-2 ml-4">
+                    <li>🎮 <strong class="text-cyan-400">SAMP</strong> (San Andreas Multiplayer)</li>
+                    <li>🤖 <strong class="text-cyan-400">Discord Bots</strong></li>
+                    <li>🚗 <strong class="text-cyan-400">MTA San Andreas</strong></li>
+                    <li>🚓 <strong class="text-cyan-400">FiveM</strong></li>
+                </ul>
+                <p class="mt-6">Follow us on social media: <strong class="text-cyan-400">@sa7ra8i</strong></p>
+                <p>All scripts are carefully tested and ready to use. Download, install, and enjoy!</p>
+            </div>
         </div>
     </div>
 
     <script>
-        const ADMIN_PASSWORD = 'admin123'; // Beddel password hna
+        const ADMIN_PASSWORD = 'admin123';
+        const ITEMS_PER_PAGE = 8;
         let isAdmin = false;
-        let games = [];
+        let scripts = [];
+        let currentPage = 1;
+        let currentFilter = 'all';
 
-        // Load games from storage
-        async function loadGames() {
-            try {
-                const result = await window.storage.get('games-list');
-                if (result && result.value) {
-                    games = JSON.parse(result.value);
-                    renderGames();
-                }
-            } catch (error) {
-                console.log('No games yet');
+        const categoryEmojis = {
+            samp: '🎮',
+            discord: '🤖',
+            mta: '🚗',
+            fivem: '🚓'
+        };
+
+        const categoryNames = {
+            samp: 'SAMP Scripts',
+            discord: 'Discord Bots',
+            mta: 'MTA San Andreas Scripts',
+            fivem: 'FiveM Scripts',
+            all: 'All Scripts'
+        };
+
+        // Page navigation
+        function showPage(page) {
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('aboutPage').classList.add('hidden');
+            if (page === 'home') {
+                document.getElementById('homePage').classList.remove('hidden');
+            } else if (page === 'about') {
+                document.getElementById('aboutPage').classList.remove('hidden');
             }
         }
 
-        // Save games to storage
-        async function saveGames() {
+        // Toggle categories dropdown
+        function toggleCategories() {
+            const dropdown = document.getElementById('categoriesDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('categoriesDropdown');
+            if (!event.target.closest('button[onclick*="toggleCategories"]') && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Filter by category
+        function filterCategory(category) {
+            currentFilter = category;
+            currentPage = 1;
+            document.getElementById('categoryTitle').textContent = categoryNames[category];
+            document.getElementById('categoriesDropdown').classList.add('hidden');
+            renderScripts();
+        }
+
+        // Toggle login modal
+        function toggleLogin() {
+            document.getElementById('loginModal').classList.toggle('hidden');
+        }
+
+        // Load scripts from storage
+        async function loadScripts() {
             try {
-                await window.storage.set('games-list', JSON.stringify(games));
-                renderGames();
+                const result = await window.storage.get('scripts-list');
+                if (result && result.value) {
+                    scripts = JSON.parse(result.value);
+                    renderScripts();
+                }
             } catch (error) {
-                console.error('Error saving games:', error);
+                console.log('No scripts yet');
+            }
+        }
+
+        // Save scripts to storage
+        async function saveScripts() {
+            try {
+                await window.storage.set('scripts-list', JSON.stringify(scripts));
+                renderScripts();
+            } catch (error) {
+                console.error('Error saving scripts:', error);
             }
         }
 
@@ -123,11 +252,11 @@
             const password = document.getElementById('passwordInput').value;
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
-                document.getElementById('loginArea').classList.add('hidden');
-                document.getElementById('adminArea').classList.remove('hidden');
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('adminBadge').classList.remove('hidden');
                 document.getElementById('uploadBtn').classList.remove('hidden');
                 document.getElementById('passwordInput').value = '';
-                renderGames();
+                renderScripts();
             } else {
                 alert('Password غالط!');
             }
@@ -136,74 +265,126 @@
         // Handle logout
         function handleLogout() {
             isAdmin = false;
-            document.getElementById('loginArea').classList.remove('hidden');
-            document.getElementById('adminArea').classList.add('hidden');
+            document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('uploadBtn').classList.add('hidden');
             document.getElementById('uploadForm').classList.add('hidden');
-            renderGames();
+            renderScripts();
         }
 
         // Toggle upload form
         function toggleUpload() {
-            const form = document.getElementById('uploadForm');
-            form.classList.toggle('hidden');
+            document.getElementById('uploadForm').classList.toggle('hidden');
         }
 
-        // Add new game
-        function addGame() {
-            const title = document.getElementById('gameTitle').value;
-            const image = document.getElementById('gameImage').value;
-            const link = document.getElementById('gameLink').value;
+        // Add new script
+        function addScript() {
+            const title = document.getElementById('scriptTitle').value;
+            const category = document.getElementById('scriptCategory').value;
+            const image = document.getElementById('scriptImage').value;
+            const link = document.getElementById('scriptLink').value;
 
-            if (title && image) {
-                games.push({
+            if (title && category && image) {
+                scripts.push({
                     id: Date.now(),
                     title: title,
+                    category: category,
                     image: image,
                     downloadLink: link
                 });
-                saveGames();
-                document.getElementById('gameTitle').value = '';
-                document.getElementById('gameImage').value = '';
-                document.getElementById('gameLink').value = '';
+                saveScripts();
+                document.getElementById('scriptTitle').value = '';
+                document.getElementById('scriptCategory').value = '';
+                document.getElementById('scriptImage').value = '';
+                document.getElementById('scriptLink').value = '';
                 document.getElementById('uploadForm').classList.add('hidden');
             }
         }
 
-        // Delete game
-        function deleteGame(id) {
-            games = games.filter(game => game.id !== id);
-            saveGames();
+        // Delete script
+        function deleteScript(id) {
+            if (confirm('Are you sure you want to delete this script?')) {
+                scripts = scripts.filter(script => script.id !== id);
+                saveScripts();
+            }
         }
 
-        // Render games
-        function renderGames() {
-            const grid = document.getElementById('gamesGrid');
-            const emptyState = document.getElementById('emptyState');
+        // Get filtered scripts
+        function getFilteredScripts() {
+            if (currentFilter === 'all') {
+                return scripts;
+            }
+            return scripts.filter(script => script.category === currentFilter);
+        }
+
+        // Render pagination
+        function renderPagination(filteredScripts) {
+            const totalPages = Math.ceil(filteredScripts.length / ITEMS_PER_PAGE);
+            const pagination = document.getElementById('pagination');
             
-            if (games.length === 0) {
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `
+                    <button 
+                        onclick="goToPage(${i})" 
+                        class="px-4 py-2 rounded-lg font-bold transition-all ${i === currentPage ? 'bg-cyan-500 text-white' : 'bg-white/10 hover:bg-white/20'}"
+                    >
+                        ${i}
+                    </button>
+                `;
+            }
+            pagination.innerHTML = html;
+        }
+
+        // Go to page
+        function goToPage(page) {
+            currentPage = page;
+            renderScripts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render scripts
+        function renderScripts() {
+            const grid = document.getElementById('scriptsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const filteredScripts = getFilteredScripts();
+            
+            if (filteredScripts.length === 0) {
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
-                document.getElementById('emptyMessage').textContent = isAdmin ? 'No games yet. Upload your first game!' : 'No games available yet.';
+                document.getElementById('emptyMessage').textContent = isAdmin ? 'No scripts yet. Upload your first script!' : 'No scripts available in this category.';
+                document.getElementById('pagination').innerHTML = '';
             } else {
                 emptyState.classList.add('hidden');
-                grid.innerHTML = games.map((game, index) => `
+                
+                const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
+                const paginatedScripts = filteredScripts.slice(startIndex, endIndex);
+                
+                grid.innerHTML = paginatedScripts.map((script, index) => `
                     <div class="bg-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/20 hover:border-cyan-400 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-cyan-500/50 fade-in" style="animation-delay: ${index * 100}ms">
                         <div class="aspect-video bg-gradient-to-br from-purple-600 to-blue-600 relative overflow-hidden">
-                            ${game.image ? 
-                                `<img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover">` :
+                            ${script.image ? 
+                                `<img src="${script.image}" alt="${script.title}" class="w-full h-full object-cover">` :
                                 `<div class="w-full h-full flex items-center justify-center">
                                     <svg class="w-16 h-16 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
                                     </svg>
                                 </div>`
                             }
+                            <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold">
+                                ${categoryEmojis[script.category]} ${script.category.toUpperCase()}
+                            </div>
                         </div>
                         <div class="p-4">
-                            <h3 class="text-xl font-bold mb-3 text-cyan-400">${game.title}</h3>
+                            <h3 class="text-xl font-bold mb-3 text-cyan-400">${script.title}</h3>
                             <div class="flex gap-2">
-                                ${game.downloadLink ? 
-                                    `<a href="${game.downloadLink}" target="_blank" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 py-2 px-4 rounded-lg font-bold text-center flex items-center justify-center gap-2 transition-all">
+                                ${script.downloadLink ? 
+                                    `<a href="${script.downloadLink}" target="_blank" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 py-2 px-4 rounded-lg font-bold text-center flex items-center justify-center gap-2 transition-all">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                         </svg>
@@ -211,7 +392,7 @@
                                     </a>` : ''
                                 }
                                 ${isAdmin ? 
-                                    `<button onclick="deleteGame(${game.id})" class="bg-red-500 hover:bg-red-600 p-2 rounded-lg transition-all">
+                                    `<button onclick="deleteScript(${script.id})" class="bg-red-500 hover:bg-red-600 p-2 rounded-lg transition-all">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
@@ -221,11 +402,13 @@
                         </div>
                     </div>
                 `).join('');
+                
+                renderPagination(filteredScripts);
             }
         }
 
         // Initialize
-        loadGames();
+        loadScripts();
     </script>
 </body>
 </html>
