@@ -138,7 +138,7 @@
                 <svg class="w-24 h-24 text-white/20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
                 </svg>
-                <p class="text-2xl text-gray-400" id="emptyMessage">No scripts available yet.</p>
+                <p class="text-2xl text-gray-400" id="emptyMessage">Loading scripts...</p>
             </div>
         </div>
     </div>
@@ -162,7 +162,26 @@
         </div>
     </div>
 
-    <script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjIhqT-7_cKQvFLAeTBuHJhLqf3X19G94",
+            authDomain: "sa7ra8iscripts.firebaseapp.com",
+            projectId: "sa7ra8iscripts",
+            storageBucket: "sa7ra8iscripts.firebasestorage.app",
+            messagingSenderId: "243952945068",
+            appId: "1:243952945068:web:0ac1d1d9c5b9be7e20dc09"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Global variables
         const ADMIN_PASSWORD = 'admin123';
         const ITEMS_PER_PAGE = 8;
         let isAdmin = false;
@@ -186,7 +205,7 @@
         };
 
         // Page navigation
-        function showPage(page) {
+        window.showPage = function(page) {
             document.getElementById('homePage').classList.add('hidden');
             document.getElementById('aboutPage').classList.add('hidden');
             if (page === 'home') {
@@ -194,13 +213,13 @@
             } else if (page === 'about') {
                 document.getElementById('aboutPage').classList.remove('hidden');
             }
-        }
+        };
 
         // Toggle categories dropdown
-        function toggleCategories() {
+        window.toggleCategories = function() {
             const dropdown = document.getElementById('categoriesDropdown');
             dropdown.classList.toggle('hidden');
-        }
+        };
 
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
@@ -211,44 +230,36 @@
         });
 
         // Filter by category
-        function filterCategory(category) {
+        window.filterCategory = function(category) {
             currentFilter = category;
             currentPage = 1;
             document.getElementById('categoryTitle').textContent = categoryNames[category];
             document.getElementById('categoriesDropdown').classList.add('hidden');
             renderScripts();
-        }
+        };
 
         // Toggle login modal
-        function toggleLogin() {
+        window.toggleLogin = function() {
             document.getElementById('loginModal').classList.toggle('hidden');
-        }
+        };
 
-        // Load scripts from storage
-        async function loadScripts() {
-            try {
-                const result = await window.storage.get('scripts-list');
-                if (result && result.value) {
-                    scripts = JSON.parse(result.value);
-                    renderScripts();
-                }
-            } catch (error) {
-                console.log('No scripts yet');
-            }
-        }
-
-        // Save scripts to storage
-        async function saveScripts() {
-            try {
-                await window.storage.set('scripts-list', JSON.stringify(scripts));
+        // Load scripts from Firestore (Real-time)
+        function loadScripts() {
+            const q = query(collection(db, 'scripts'), orderBy('timestamp', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                scripts = [];
+                snapshot.forEach((doc) => {
+                    scripts.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
                 renderScripts();
-            } catch (error) {
-                console.error('Error saving scripts:', error);
-            }
+            });
         }
 
         // Handle login
-        function handleLogin() {
+        window.handleLogin = function() {
             const password = document.getElementById('passwordInput').value;
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
@@ -260,53 +271,67 @@
             } else {
                 alert('Password غالط!');
             }
-        }
+        };
 
         // Handle logout
-        function handleLogout() {
+        window.handleLogout = function() {
             isAdmin = false;
             document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('uploadBtn').classList.add('hidden');
             document.getElementById('uploadForm').classList.add('hidden');
             renderScripts();
-        }
+        };
 
         // Toggle upload form
-        function toggleUpload() {
+        window.toggleUpload = function() {
             document.getElementById('uploadForm').classList.toggle('hidden');
-        }
+        };
 
-        // Add new script
-        function addScript() {
+        // Add new script to Firestore
+        window.addScript = async function() {
             const title = document.getElementById('scriptTitle').value;
             const category = document.getElementById('scriptCategory').value;
             const image = document.getElementById('scriptImage').value;
             const link = document.getElementById('scriptLink').value;
 
             if (title && category && image) {
-                scripts.push({
-                    id: Date.now(),
-                    title: title,
-                    category: category,
-                    image: image,
-                    downloadLink: link
-                });
-                saveScripts();
-                document.getElementById('scriptTitle').value = '';
-                document.getElementById('scriptCategory').value = '';
-                document.getElementById('scriptImage').value = '';
-                document.getElementById('scriptLink').value = '';
-                document.getElementById('uploadForm').classList.add('hidden');
+                try {
+                    await addDoc(collection(db, 'scripts'), {
+                        title: title,
+                        category: category,
+                        image: image,
+                        downloadLink: link,
+                        timestamp: Date.now()
+                    });
+                    
+                    document.getElementById('scriptTitle').value = '';
+                    document.getElementById('scriptCategory').value = '';
+                    document.getElementById('scriptImage').value = '';
+                    document.getElementById('scriptLink').value = '';
+                    document.getElementById('uploadForm').classList.add('hidden');
+                    
+                    alert('Script added successfully! ✅');
+                } catch (error) {
+                    console.error('Error adding script:', error);
+                    alert('Error adding script! ❌');
+                }
+            } else {
+                alert('Please fill all required fields!');
             }
-        }
+        };
 
-        // Delete script
-        function deleteScript(id) {
+        // Delete script from Firestore
+        window.deleteScript = async function(id) {
             if (confirm('Are you sure you want to delete this script?')) {
-                scripts = scripts.filter(script => script.id !== id);
-                saveScripts();
+                try {
+                    await deleteDoc(doc(db, 'scripts', id));
+                    alert('Script deleted! ✅');
+                } catch (error) {
+                    console.error('Error deleting script:', error);
+                    alert('Error deleting script! ❌');
+                }
             }
-        }
+        };
 
         // Get filtered scripts
         function getFilteredScripts() {
@@ -341,11 +366,11 @@
         }
 
         // Go to page
-        function goToPage(page) {
+        window.goToPage = function(page) {
             currentPage = page;
             renderScripts();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        };
 
         // Render scripts
         function renderScripts() {
@@ -392,7 +417,7 @@
                                     </a>` : ''
                                 }
                                 ${isAdmin ? 
-                                    `<button onclick="deleteScript(${script.id})" class="bg-red-500 hover:bg-red-600 p-2 rounded-lg transition-all">
+                                    `<button onclick="deleteScript('${script.id}')" class="bg-red-500 hover:bg-red-600 p-2 rounded-lg transition-all">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
@@ -407,7 +432,7 @@
             }
         }
 
-        // Initialize
+        // Initialize - Load scripts from Firebase
         loadScripts();
     </script>
 </body>
